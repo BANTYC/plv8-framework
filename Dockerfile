@@ -1,10 +1,10 @@
 FROM node:12.22.1-buster-slim AS installer
 RUN buildDependencies="ca-certificates make build-essential python3 libpq-dev postgresql-client" \
   && apt-get update && apt-get install -y --no-install-recommends ${buildDependencies}
-WORKDIR /usr/deploy/Plv8
+WORKDIR /usr/deploy
 COPY . .
+WORKDIR /usr/deploy/Plv8
 RUN npm install
-
 CMD PGPASSWORD=${ADMIN_PASSWORD} psql -h ${PLV8_POSTGRES_HOST} -p ${PLV8_POSTGRES_PORT} -U ${ADMIN_USER} -a -c "CREATE USER ${PLV8_POSTGRES_USER} WITH PASSWORD '${PLV8_POSTGRES_PASSWORD}';" \
   && PGPASSWORD=${ADMIN_PASSWORD} psql -h ${PLV8_POSTGRES_HOST} -p ${PLV8_POSTGRES_PORT} -U ${ADMIN_USER} -a -c "CREATE DATABASE ${PLV8_DB_NAME}" \
   && PGPASSWORD=${ADMIN_PASSWORD} psql -h ${PLV8_POSTGRES_HOST} -p ${PLV8_POSTGRES_PORT} -U ${ADMIN_USER} -a -c "GRANT ALL PRIVILEGES ON DATABASE ${PLV8_DB_NAME} TO ${PLV8_POSTGRES_USER};" \
